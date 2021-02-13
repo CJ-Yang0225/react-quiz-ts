@@ -14,9 +14,11 @@ const App = () => {
   const [quizzes, setQuizzes] = useState<QuizResponse[]>([]);
   const [index, setIndex] = useState(0);
   const [score, setScore] = useState(0);
+  const [answered, setAnswered] = useState(false);
 
   useEffect(() => {
     if (index === TOTAL_QUIZZES - 1) setGameOver(true);
+    setAnswered(false);
   }, [index]);
 
   const startQuiz = async () => {
@@ -35,8 +37,8 @@ const App = () => {
   const checkAnswer = (selectedOption: string) => {
     if (!gameOver) {
       const isCorrect = quizzes[index].correct_answer === selectedOption;
-
       if (isCorrect) setScore((prevScore) => prevScore + 1);
+      setAnswered(true);
     }
   };
 
@@ -57,7 +59,7 @@ const App = () => {
         totalQuizzes={TOTAL_QUIZZES}
         score={score}
       />
-      {gameOver ? (
+      {gameOver && index === 0 ? (
         <p>Welcome to the Computer-Science Quiz!</p>
       ) : loading ? (
         <p className="app__loading">Loading Questions ...</p>
@@ -69,7 +71,11 @@ const App = () => {
         />
       )}
       {!gameOver && (
-        <button className="app__next" onClick={nextQuiz}>
+        <button
+          className="app__next"
+          onClick={nextQuiz}
+          style={{ display: answered ? "block" : "none" }}
+        >
           Next Question
         </button>
       )}
