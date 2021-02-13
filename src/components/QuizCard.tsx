@@ -1,27 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 type Props = {
-  hasAnswered: boolean;
   question: string;
   options: string[];
-  callback: any;
+  checkAnswer: any;
 };
 
-const QuestionCard: React.FC<Props> = ({
-  hasAnswered,
+const QuizCard: React.FC<Props> = ({
   question,
   options,
-  callback,
+  checkAnswer,
   ...props
 }) => {
+  const [answered, setAnswered] = useState(false);
+
+  useEffect(() => {
+    setAnswered(false);
+  }, [question]);
+
+  // Curring
+  const handleClick = (checkAnswer: any) => (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    setAnswered(true);
+    // .textContent 或 .innerText 會將 HTML 特殊字元轉為一般文字 (&lt; 轉為 <)，造成比對錯誤
+    checkAnswer(e.currentTarget.value);
+  };
+
+  console.log("re-render");
+
   return (
     <div className="card">
-      <p dangerouslySetInnerHTML={{ __html: question + props.children }} />
+      <h4 dangerouslySetInnerHTML={{ __html: question }} />
       <div className="card__options">
         {options.map((option, index) => (
           <div key={index}>
-            <button disabled={hasAnswered} onClick={callback}>
-              <span dangerouslySetInnerHTML={{ __html: option }} />
+            <button
+              value={option}
+              disabled={answered}
+              onClick={(e) => handleClick(checkAnswer)(e)}
+            >
+              <span dangerouslySetInnerHTML={{ __html: option }}></span>
             </button>
           </div>
         ))}
@@ -29,5 +48,4 @@ const QuestionCard: React.FC<Props> = ({
     </div>
   );
 };
-
-export default QuestionCard;
+export default QuizCard;
