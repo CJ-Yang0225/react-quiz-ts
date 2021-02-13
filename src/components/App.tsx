@@ -52,13 +52,14 @@ const App = () => {
           Start
         </button>
       )}
-
       <QuizInfoBar
         quizIndex={index + 1}
         totalQuizzes={TOTAL_QUIZZES}
         score={score}
       />
-      {loading ? (
+      {gameOver ? (
+        <p>Welcome to the Computer-Science Quiz!</p>
+      ) : loading ? (
         <p className="app__loading">Loading Questions ...</p>
       ) : (
         <QuizCard
