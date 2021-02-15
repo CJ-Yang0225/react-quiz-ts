@@ -34,8 +34,6 @@ const QuizCard: React.FC<Props> = ({
     callback(answer);
   };
 
-  console.log("re-render");
-
   return (
     <Wrapper className="card">
       <h3 dangerouslySetInnerHTML={{ __html: question }} />
