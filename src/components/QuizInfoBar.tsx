@@ -8,11 +8,11 @@ type Props = {
 
 const QuizInfoBar: React.FC<Props> = ({ quizIndex, totalQuizzes, score }) => {
   return (
-    <div className="quiz__infoBar">
-      <h3>Score: {score}</h3>
-      <p>
+    <div className="infoBar">
+      <h3>
         {quizIndex} / {totalQuizzes}
-      </p>
+      </h3>
+      <h3 className="infoBar__score">Score: {score}</h3>
     </div>
   );
 };

@@ -1,51 +1,64 @@
 import React, { useState, useEffect } from "react";
+import { Wrapper, ButtonWrapper } from "./QuizCard.styles";
 
 type Props = {
   question: string;
-  options: string[];
-  checkAnswer: any;
+  correctAnswer: string;
+  incorrectAnswers: string[];
+  checkAnswer: (option: string) => void;
 };
 
 const QuizCard: React.FC<Props> = ({
   question,
-  options,
+  correctAnswer,
+  incorrectAnswers,
   checkAnswer,
-  ...props
 }) => {
-  const [answered, setAnswered] = useState(false);
+  const [options, setOptions] = useState<string[]>([]);
+  const [clicked, setClicked] = useState(false);
+  const [chosenAnswer, setChosenAnswer] = useState("");
+
+  const shuffleOptions = (array: string[]) =>
+    array.sort(() => Math.random() - 0.5);
 
   useEffect(() => {
-    setAnswered(false);
-  }, [question]);
+    setOptions(() => shuffleOptions([...incorrectAnswers, correctAnswer]));
+    setClicked(false);
+  }, [incorrectAnswers, correctAnswer]);
 
   // Curring
-  const handleClick = (checkAnswer: any) => (
-    e: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    setAnswered(true);
+  const handleClick = (callback: any) => (answer: string) => {
+    setClicked(true);
+    setChosenAnswer(answer);
     // .textContent 或 .innerText 會將 HTML 特殊字元轉為一般文字 (&lt; 轉為 <)，造成比對錯誤
-    checkAnswer(e.currentTarget.value);
+    callback(answer);
   };
 
   console.log("re-render");
 
   return (
-    <div className="card">
-      <h4 dangerouslySetInnerHTML={{ __html: question }} />
+    <Wrapper className="card">
+      <h3 dangerouslySetInnerHTML={{ __html: question }} />
       <div className="card__options">
-        {options.map((option, index) => (
-          <div key={index}>
+        {options.map((option) => (
+          <ButtonWrapper
+            key={option}
+            correctOption={option === correctAnswer && clicked}
+            isClicked={chosenAnswer === option}
+          >
             <button
               value={option}
-              disabled={answered}
-              onClick={(e) => handleClick(checkAnswer)(e)}
+              disabled={clicked}
+              onClick={({ currentTarget: { value } }) =>
+                handleClick(checkAnswer)(value)
+              }
             >
               <span dangerouslySetInnerHTML={{ __html: option }}></span>
             </button>
-          </div>
+          </ButtonWrapper>
         ))}
       </div>
-    </div>
+    </Wrapper>
   );
 };
 export default QuizCard;
