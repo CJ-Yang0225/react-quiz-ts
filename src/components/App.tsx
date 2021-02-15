@@ -12,37 +12,32 @@ import { GlobalStyle, Wrapper } from "./App.styles";
 const TOTAL_QUIZZES = 10;
 
 const App = () => {
-  const [loading, setLoading] = useState(true);
-  const [gameOver, setGameOver] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isOver, setIsOver] = useState(true);
   const [quizzes, setQuizzes] = useState<QuizResponse[]>([]);
   const [quizNo, setQuizNo] = useState(0);
   const [score, setScore] = useState(0);
   const [answered, setAnswered] = useState(false);
   const quiz = quizzes[quizNo];
 
-  console.log("App render");
-
   const startQuiz = async () => {
-    await fetchQuizData(TOTAL_QUIZZES, Category.COMPUTERS_SCIENCE).then(
-      (quizzes) => {
-        setQuizzes(quizzes);
-        setLoading(false);
-        setGameOver(false);
-        setAnswered(false);
+    await fetchQuizData(TOTAL_QUIZZES, Category.COMPUTERS_SCIENCE)
+      .then((res) => {
+        setQuizzes(res);
+        setIsLoading(false);
         setQuizNo(0);
-        setScore(0);
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
+      })
+      .catch((err) => console.error(err));
+    setIsOver(false);
+    setAnswered(false);
+    setScore(0);
   };
 
   const checkAnswer = (selectedOption: string) => {
     const isCorrect = quiz.correct_answer === selectedOption;
     setAnswered(true);
     if (isCorrect) setScore((prevScore) => prevScore + 1);
-    if (quizNo === TOTAL_QUIZZES - 1) setGameOver(true);
+    if (quizNo === TOTAL_QUIZZES - 1) setIsOver(true);
   };
 
   const nextQuiz = () => {
@@ -66,7 +61,7 @@ const App = () => {
               <h3>Welcome to the Computer-Science Quiz!</h3>
               <p>👇 Click to start</p>
             </>
-          ) : loading ? (
+          ) : isLoading ? (
             <p className="app__loading">Loading Questions ...</p>
           ) : (
             <QuizCard
@@ -76,7 +71,7 @@ const App = () => {
               checkAnswer={checkAnswer}
             />
           )}
-          {gameOver ? (
+          {isOver ? (
             <button className="app__start" onClick={startQuiz}>
               Start
             </button>

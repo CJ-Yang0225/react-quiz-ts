@@ -1,14 +1,14 @@
-import React, { useState, useLayoutEffect, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Wrapper, ButtonWrapper } from "./QuizCard.styles";
 
-type QuizCardProps = {
+type Props = {
   question: string;
   correctAnswer: string;
   incorrectAnswers: string[];
   checkAnswer: (option: string) => void;
 };
 
-const QuizCard: React.FC<QuizCardProps> = ({
+const QuizCard: React.FC<Props> = ({
   question,
   correctAnswer,
   incorrectAnswers,
@@ -21,12 +21,12 @@ const QuizCard: React.FC<QuizCardProps> = ({
   const shuffleOptions = (array: string[]) =>
     array.sort(() => Math.random() - 0.5);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setOptions(() => shuffleOptions([...incorrectAnswers, correctAnswer]));
     setClicked(false);
   }, [incorrectAnswers, correctAnswer]);
 
-  // Currying
+  // Curring
   const handleClick = (callback: any) => (answer: string) => {
     setClicked(true);
     setChosenAnswer(answer);
