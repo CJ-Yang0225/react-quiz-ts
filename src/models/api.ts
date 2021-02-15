@@ -1,7 +1,5 @@
-import { shuffleArray } from "./utils";
-
 export enum Category {
-  SCIENCE_COMPUTERS = "18",
+  COMPUTERS_SCIENCE = "18",
 }
 
 export type Quiz = {
@@ -20,8 +18,5 @@ export const fetchQuizData = async (amount: number, category: Category) => {
 
   const data = await (await fetch(endpoint)).json();
 
-  return data.results.map((result: Quiz) => ({
-    ...result,
-    options: shuffleArray([result.correct_answer, ...result.incorrect_answers]),
-  }));
+  return data.results;
 };
