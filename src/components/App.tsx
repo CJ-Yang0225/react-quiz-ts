@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 // Components
 import QuizCard from "./QuizCard";
-import QuizInfoBar from "./QuizInfoBar";
+import QuizInfoBar from "./QuizInfo";
 
-// Models
+// Types
 import { fetchQuizData, Category, QuizResponse } from "../models/api";
 
 // Styles
@@ -15,33 +15,39 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [gameOver, setGameOver] = useState(true);
   const [quizzes, setQuizzes] = useState<QuizResponse[]>([]);
-  const [index, setIndex] = useState(0);
+  const [quizNo, setQuizNo] = useState(0);
   const [score, setScore] = useState(0);
   const [answered, setAnswered] = useState(false);
+  const quiz = quizzes[quizNo];
+
+  console.log("App render");
 
   const startQuiz = async () => {
-    await fetchQuizData(TOTAL_QUIZZES, Category.COMPUTERS_SCIENCE)
-      .then((res) => {
-        setQuizzes(res);
+    await fetchQuizData(TOTAL_QUIZZES, Category.COMPUTERS_SCIENCE).then(
+      (quizzes) => {
+        setQuizzes(quizzes);
         setLoading(false);
-        setIndex(0);
-      })
-      .catch((err) => console.error(err));
-    setGameOver(false);
-    setAnswered(false);
-    setScore(0);
+        setGameOver(false);
+        setAnswered(false);
+        setQuizNo(0);
+        setScore(0);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
   };
 
   const checkAnswer = (selectedOption: string) => {
-    const isCorrect = quizzes[index].correct_answer === selectedOption;
+    const isCorrect = quiz.correct_answer === selectedOption;
     setAnswered(true);
     if (isCorrect) setScore((prevScore) => prevScore + 1);
-    if (index === TOTAL_QUIZZES - 1) setGameOver(true);
+    if (quizNo === TOTAL_QUIZZES - 1) setGameOver(true);
   };
 
   const nextQuiz = () => {
     setAnswered(false);
-    if (index < TOTAL_QUIZZES - 1) setIndex((prevIndex) => prevIndex + 1);
+    if (quizNo < TOTAL_QUIZZES - 1) setQuizNo((prevIndex) => prevIndex + 1);
   };
 
   return (
@@ -51,11 +57,11 @@ const App = () => {
         <Wrapper>
           <h1 className="app__title">REACT QUIZ</h1>
           <QuizInfoBar
-            quizIndex={index + 1}
+            quizIndex={quizNo + 1}
             totalQuizzes={TOTAL_QUIZZES}
             score={score}
           />
-          {gameOver && index === 0 ? (
+          {quizzes.length === 0 ? (
             <>
               <h3>Welcome to the Computer-Science Quiz!</h3>
               <p>👇 Click to start</p>
@@ -64,9 +70,9 @@ const App = () => {
             <p className="app__loading">Loading Questions ...</p>
           ) : (
             <QuizCard
-              question={quizzes[index].question}
-              correctAnswer={quizzes[index].correct_answer}
-              incorrectAnswers={quizzes[index].incorrect_answers}
+              question={quiz.question}
+              correctAnswer={quiz.correct_answer}
+              incorrectAnswers={quiz.incorrect_answers}
               checkAnswer={checkAnswer}
             />
           )}

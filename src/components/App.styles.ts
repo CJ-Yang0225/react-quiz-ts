@@ -1,5 +1,6 @@
 import styled, { createGlobalStyle } from "styled-components";
 import { normalize } from "styled-normalize";
+import bgImg from "../images/brandon-norton.jpg";
 
 export const GlobalStyle = createGlobalStyle`
   ${normalize}
@@ -10,7 +11,7 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    background-image: url('../images/brandon-norton.jpg');
+    background-image: url(${bgImg});
     background-size: cover;
     margin: 0;
     padding: 0 20px;

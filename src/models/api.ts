@@ -2,7 +2,7 @@ export enum Category {
   COMPUTERS_SCIENCE = "18",
 }
 
-export type Quiz = {
+export type QuizResponse = {
   category: string;
   type: string;
   difficulty: string;
@@ -10,8 +10,6 @@ export type Quiz = {
   correct_answer: string;
   incorrect_answers: string[];
 };
-
-export type QuizResponse = Quiz & { options: string[] };
 
 export const fetchQuizData = async (amount: number, category: Category) => {
   const endpoint = `https://opentdb.com/api.php?amount=${amount}&category=${category}&type=multiple`;
