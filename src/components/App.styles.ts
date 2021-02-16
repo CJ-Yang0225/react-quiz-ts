@@ -65,4 +65,8 @@ export const Wrapper = styled.div`
     margin: 8px 0;
     padding: 0 40px;
   }
+
+  .app__next:disabled {
+    visibility: hidden;
+  }
 `;

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 // Components
 import QuizCard from "./QuizCard";
-import QuizInfoBar from "./QuizInfo";
+import QuizInfo from "./QuizInfo";
 
-// Types
+// Models
 import { fetchQuizData, Category, QuizResponse } from "../models/api";
 
 // Styles
@@ -11,38 +11,41 @@ import { GlobalStyle, Wrapper } from "./App.styles";
 
 const TOTAL_QUIZZES = 10;
 
+type userAnswer = {
+  chosen_answer: string | null;
+};
+
+type Quiz = QuizResponse & userAnswer;
+
+const isQuizAnswered = ({ chosen_answer }: Quiz) => chosen_answer !== undefined;
+
+const isQuizCorrectAnswered = ({ correct_answer, chosen_answer }: Quiz) =>
+  chosen_answer === correct_answer;
+
 const App = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isOver, setIsOver] = useState(true);
-  const [quizzes, setQuizzes] = useState<QuizResponse[]>([]);
-  const [quizNo, setQuizNo] = useState(0);
-  const [score, setScore] = useState(0);
-  const [answered, setAnswered] = useState(false);
-  const quiz = quizzes[quizNo];
+  const [quizNumber, setQuizNumber] = useState(0);
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const score = quizzes.filter(isQuizCorrectAnswered).length;
+  const isOver = quizzes.every(isQuizAnswered);
+  const quiz = quizzes[quizNumber];
 
-  const startQuiz = async () => {
-    await fetchQuizData(TOTAL_QUIZZES, Category.COMPUTERS_SCIENCE)
-      .then((res) => {
-        setQuizzes(res);
-        setIsLoading(false);
-        setQuizNo(0);
+  const answerQuiz = (chosen_answer: string) => {
+    setQuizzes((quizzes) =>
+      Object.assign([...quizzes], {
+        [quizNumber]: { ...quiz, chosen_answer },
       })
-      .catch((err) => console.error(err));
-    setIsOver(false);
-    setAnswered(false);
-    setScore(0);
+    );
   };
 
-  const checkAnswer = (selectedOption: string) => {
-    const isCorrect = quiz.correct_answer === selectedOption;
-    setAnswered(true);
-    if (isCorrect) setScore((prevScore) => prevScore + 1);
-    if (quizNo === TOTAL_QUIZZES - 1) setIsOver(true);
-  };
+  const nextQuiz = () => setQuizNumber((quizNumber) => quizNumber + 1);
 
-  const nextQuiz = () => {
-    setAnswered(false);
-    if (quizNo < TOTAL_QUIZZES - 1) setQuizNo((prevIndex) => prevIndex + 1);
+  const loadQuizzes = async () => {
+    const quizzes = await fetchQuizData(
+      TOTAL_QUIZZES,
+      Category.COMPUTERS_SCIENCE
+    ).catch((err) => console.error(err));
+    setQuizNumber(0);
+    setQuizzes(quizzes);
   };
 
   return (
@@ -51,35 +54,36 @@ const App = () => {
       <div className="App">
         <Wrapper>
           <h1 className="app__title">REACT QUIZ</h1>
-          <QuizInfoBar
-            quizIndex={quizNo + 1}
-            totalQuizzes={TOTAL_QUIZZES}
-            score={score}
-          />
           {quizzes.length === 0 ? (
             <>
               <h3>Welcome to the Computer-Science Quiz!</h3>
               <p>👇 Click to start</p>
             </>
-          ) : isLoading ? (
-            <p className="app__loading">Loading Questions ...</p>
           ) : (
-            <QuizCard
-              question={quiz.question}
-              correctAnswer={quiz.correct_answer}
-              incorrectAnswers={quiz.incorrect_answers}
-              checkAnswer={checkAnswer}
-            />
+            <>
+              <QuizInfo
+                quizIndex={quizNumber + 1}
+                totalQuizzes={TOTAL_QUIZZES}
+                score={score}
+                difficulty={quiz.difficulty}
+              />
+              <QuizCard
+                question={quiz.question}
+                correctAnswer={quiz.correct_answer}
+                incorrectAnswers={quiz.incorrect_answers}
+                onAnswer={answerQuiz}
+              />
+            </>
           )}
           {isOver ? (
-            <button className="app__start" onClick={startQuiz}>
-              Start
+            <button className="app__start" onClick={loadQuizzes}>
+              {quizNumber === 0 ? "Start" : "Restart"}
             </button>
           ) : (
             <button
               className="app__next"
               onClick={nextQuiz}
-              style={{ visibility: answered ? "visible" : "hidden" }}
+              disabled={!isQuizAnswered(quiz)}
             >
               Next Question
             </button>

@@ -19,13 +19,12 @@ const QuizInfo: React.FC<QuizInfoProps> = ({
   score,
   difficulty,
 }) => {
-
   return (
     <div className="infoBar">
-      <h3>
+      <h3 className="quiz__number">
         {quizIndex} / {totalQuizzes}
       </h3>
-      <h3>{starsOfDifficulty[difficulty]}</h3>
+      <h3 className="quiz__difficulty">{starsOfDifficulty[difficulty]}</h3>
       <h3 className="infoBar__score">Score: {score}</h3>
     </div>
   );

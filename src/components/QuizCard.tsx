@@ -1,42 +1,44 @@
 import React, { useState, useEffect } from "react";
 import { Wrapper, ButtonWrapper } from "./QuizCard.styles";
 
-type Props = {
+type QuizCardProps = {
   question: string;
   correctAnswer: string;
   incorrectAnswers: string[];
-  checkAnswer: (option: string) => void;
+  onAnswer: (option: string) => void;
 };
 
-const QuizCard: React.FC<Props> = ({
+const shuffleOptions = (array: string[]) =>
+  array.sort(() => Math.random() - 0.5);
+
+const QuizCard: React.FC<QuizCardProps> = ({
   question,
   correctAnswer,
   incorrectAnswers,
-  checkAnswer,
+  onAnswer,
 }) => {
   const [options, setOptions] = useState<string[]>([]);
   const [clicked, setClicked] = useState(false);
   const [chosenAnswer, setChosenAnswer] = useState("");
-
-  const shuffleOptions = (array: string[]) =>
-    array.sort(() => Math.random() - 0.5);
 
   useEffect(() => {
     setOptions(() => shuffleOptions([...incorrectAnswers, correctAnswer]));
     setClicked(false);
   }, [incorrectAnswers, correctAnswer]);
 
-  // Curring
-  const handleClick = (callback: any) => (answer: string) => {
+  // Currying
+  const handleClick = (onAnswer: any) => (answer: string) => {
     setClicked(true);
     setChosenAnswer(answer);
-    // .textContent 或 .innerText 會將 HTML 特殊字元轉為一般文字 (&lt; 轉為 <)，造成比對錯誤
-    callback(answer);
+    onAnswer(answer);
   };
 
   return (
     <Wrapper className="card">
-      <h3 dangerouslySetInnerHTML={{ __html: question }} />
+      <h3
+        className="card__question"
+        dangerouslySetInnerHTML={{ __html: question }}
+      />
       <div className="card__options">
         {options.map((option) => (
           <ButtonWrapper
@@ -48,10 +50,10 @@ const QuizCard: React.FC<Props> = ({
               value={option}
               disabled={clicked}
               onClick={({ currentTarget: { value } }) =>
-                handleClick(checkAnswer)(value)
+                handleClick(onAnswer)(value)
               }
             >
-              <span dangerouslySetInnerHTML={{ __html: option }}></span>
+              <span dangerouslySetInnerHTML={{ __html: option }} />
             </button>
           </ButtonWrapper>
         ))}
