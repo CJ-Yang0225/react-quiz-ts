@@ -4,7 +4,7 @@ type QuizInfoProps = {
   quizIndex: number;
   totalQuizzes: number;
   score: number;
-  difficulty: string;
+  difficulty: "easy" | "medium" | "hard";
 };
 
 const starsOfDifficulty: Record<string, string> = {

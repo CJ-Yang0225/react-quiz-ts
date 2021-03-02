@@ -12,7 +12,7 @@ import { GlobalStyle, Wrapper } from "./App.styles";
 const TOTAL_QUIZZES = 10;
 
 type userAnswer = {
-  chosen_answer: string | null;
+  chosen_answer?: string;
 };
 
 type Quiz = QuizResponse & userAnswer;
@@ -39,14 +39,13 @@ const App = () => {
 
   const nextQuiz = () => setQuizNumber((quizNumber) => quizNumber + 1);
 
-  const loadQuizzes = async () => {
-    const quizzes = await fetchQuizData(
-      TOTAL_QUIZZES,
-      Category.COMPUTERS_SCIENCE
-    ).catch((err) => console.error(err));
-    setQuizNumber(0);
-    setQuizzes(quizzes);
-  };
+  const loadQuizzes = () =>
+    fetchQuizData(TOTAL_QUIZZES, Category.COMPUTERS_SCIENCE)
+      .then((quizzes: Quiz[]) => {
+        setQuizNumber(0);
+        setQuizzes(quizzes);
+      })
+      .catch(console.error);
 
   return (
     <>

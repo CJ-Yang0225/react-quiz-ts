@@ -15,7 +15,7 @@ const QuizCard: React.FC<QuizCardProps> = ({
   question,
   correctAnswer,
   incorrectAnswers,
-  onAnswer,
+  onAnswer: emitAnswer,
 }) => {
   const [options, setOptions] = useState<string[]>([]);
   const [clicked, setClicked] = useState(false);
@@ -26,11 +26,12 @@ const QuizCard: React.FC<QuizCardProps> = ({
     setClicked(false);
   }, [incorrectAnswers, correctAnswer]);
 
-  // Currying
-  const handleClick = (onAnswer: any) => (answer: string) => {
+  const handleClick = ({
+    currentTarget: { value: answer },
+  }: React.MouseEvent<HTMLButtonElement>) => {
     setClicked(true);
     setChosenAnswer(answer);
-    onAnswer(answer);
+    emitAnswer(answer);
   };
 
   return (
@@ -46,13 +47,7 @@ const QuizCard: React.FC<QuizCardProps> = ({
             correctOption={option === correctAnswer && clicked}
             isClicked={chosenAnswer === option}
           >
-            <button
-              value={option}
-              disabled={clicked}
-              onClick={({ currentTarget: { value } }) =>
-                handleClick(onAnswer)(value)
-              }
-            >
+            <button value={option} disabled={clicked} onClick={handleClick}>
               <span dangerouslySetInnerHTML={{ __html: option }} />
             </button>
           </ButtonWrapper>
