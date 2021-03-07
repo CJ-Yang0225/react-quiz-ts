@@ -1,6 +1,6 @@
 import styled, { createGlobalStyle } from "styled-components";
 import { normalize } from "styled-normalize";
-import bgImg from "../images/brandon-norton.jpg";
+import bgImg from "../images/bg.jpg";
 
 export const GlobalStyle = createGlobalStyle`
   ${normalize}
@@ -48,8 +48,13 @@ export const Wrapper = styled.div`
     align-items: center;
     width: 100%;
 
+    &__number,
+    &__difficulty {
+      color: darkblue;
+    }
+
     &__score {
-      color: #ffe777;
+      color: gold;
       font-size: 1.5rem;
     }
   }
