@@ -6,7 +6,7 @@ export const GlobalStyle = createGlobalStyle`
   ${normalize}
 
   html {
-    height: 100%;
+    min-height: 100vh;
     font-family: 'Catamaran', sans-serif;
   }
 
@@ -73,5 +73,11 @@ export const Wrapper = styled.div`
 
   .app__next:disabled {
     visibility: hidden;
+  }
+
+  @media screen and (max-width: 576px) {
+    .app__title {
+      font-size: 48px;
+    }
   }
 `;
